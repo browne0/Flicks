@@ -16,11 +16,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var searchBar: UISearchBar!
     
+    
     var endpoint: String!
     
     var movies: [NSDictionary]?
-    
-    var filteredData: [String]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,13 +29,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 NSFontAttributeName: UIFont.boldSystemFontOfSize(22),
                 NSForegroundColorAttributeName: UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
             ]
-            navigationBar.tintColor = UIColor(red: 204.0/255.0, green: 225.0/255.0, blue: 232.0/255.0, alpha: 0.8)
+            navigationBar.barTintColor = UIColor(red: 204.0/255.0, green: 225.0/255.0, blue: 232.0/255.0, alpha: 0.8)
         }
         
-        self.tableView.contentInset = UIEdgeInsetsMake(-34,0,0,0);
+        self.tableView.contentInset = UIEdgeInsetsMake(0,0,0,0);
         tableView.dataSource = self
         tableView.delegate = self
-        searchBar.delegate = self
         
         let topBar = UIView(frame: UIApplication.sharedApplication().statusBarFrame)
         topBar.backgroundColor = UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 1.0)
@@ -110,7 +108,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         if Reachability.isConnectedToNetwork() == true {
             UIView.animateWithDuration(0.15, animations: {
                 self.networkErrorView.alpha = 0
-                self.tableView.contentInset = UIEdgeInsetsMake(-34,0,0,0);
                 let tableViewWidth = self.tableView.frame.width
                 self.tableView.frame = CGRectMake(0, 0, tableViewWidth, 582)
                 self.networkErrorView.transform = CGAffineTransformMakeTranslation(0.0, -34.0)
@@ -138,11 +135,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        movies = searchText.isEmpty ? data : data.filter({(dataString: String) -> Bool in
-            return dataString.rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
-        })
-        
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
