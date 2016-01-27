@@ -20,15 +20,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        let nowPlayingNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
-        let nowPlayingViewController = nowPlayingNavigationController.topViewController as! MoviesViewController
+        let nowPlayingNavigationController = storyboard.instantiateViewControllerWithIdentifier("FlicksNavigationController") as! UINavigationController
+        let nowPlayingViewController = nowPlayingNavigationController.topViewController as! CollectionViewController
         
         nowPlayingViewController.endpoint = "now_playing"
         nowPlayingNavigationController.tabBarItem.title = "Now Playing"
         nowPlayingNavigationController.tabBarItem.image = UIImage(named: "now_playing")
         
-        let topRatedNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
-        let topRatedViewController = topRatedNavigationController.topViewController as! MoviesViewController
+        let topRatedNavigationController = storyboard.instantiateViewControllerWithIdentifier("FlicksNavigationController") as! UINavigationController
+        let topRatedViewController = topRatedNavigationController.topViewController as! CollectionViewController
         
         topRatedViewController.endpoint = "top_rated"
         topRatedNavigationController.tabBarItem.title = "Top Rated"
@@ -36,9 +36,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [nowPlayingNavigationController, topRatedNavigationController]
-        
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
+        
+        tabBarController.tabBar.barTintColor = UIColor(red: 204.0/255.0, green: 225.0/255.0, blue: 232.0/255.0, alpha: 0.8)
         
         return true
     }

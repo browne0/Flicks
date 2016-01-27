@@ -16,9 +16,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var networkErrorView: UIView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    
     var endpoint: String!
     
+    var filteredData: [NSDictionary]?
     var movies: [NSDictionary]?
     
     override func viewDidLoad() {
@@ -35,6 +35,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         self.tableView.contentInset = UIEdgeInsetsMake(0,0,0,0);
         tableView.dataSource = self
         tableView.delegate = self
+        searchBar.delegate = self
         
         let topBar = UIView(frame: UIApplication.sharedApplication().statusBarFrame)
         topBar.backgroundColor = UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 1.0)
@@ -75,6 +76,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredData = searchText.isEmpty ? movies : movies!.filter({(dataString: NSDictionary) -> Bool in
+            return (dataString["title"] as! String).rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
+        })
+        self.tableView.reloadData()
+    }
+    
     func fetchStories()
     {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
@@ -96,6 +104,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             MBProgressHUD.hideHUDForView(self.view, animated: true)
                             NSLog("response: \(responseDictionary)")
                             self.movies = responseDictionary["results"] as? [NSDictionary]
+                            self.filteredData = self.movies
                             self.tableView.reloadData()
                     }
                 }
@@ -127,8 +136,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if let movies = movies {
-            return movies.count
+        if let filteredData = filteredData {
+            return filteredData.count
         }
         else {
             return 0
@@ -147,7 +156,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         
-        let movie = movies![indexPath.row]
+        let movie = filteredData![indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
         
